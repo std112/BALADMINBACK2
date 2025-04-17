@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Balance Panel</title>
+  <style>
+    body { font-family: Arial; padding: 20px; max-width: 1000px; margin: auto; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    input[type="number"], input[type="text"] { width: 100px; }
+    button { padding: 4px 8px; margin-right: 4px; }
+    .banned { background: #ffdddd; }
+  </style>
+</head>
+<body>
+  <h2>Admin Panel – Manage User Balances</h2>
+  
+  <h3>Add New Steam User</h3>
+  <input type="text" id="new-steam-url" placeholder="Enter Steam Profile URL" style="width: 300px;" />
+  <input type="number" id="new-balance" placeholder="Initial Balance" />
+  <input type="text" id="new-warning" placeholder="Warning message" style="width: 300px;" />
+  <button onclick="addNewUser()">Add User</button>
+  <hr />
+
+<table>
+    <thead>
+      <tr>
+        <th>Steam ID</th>
+        <th>Balance ($)</th>
+        <th>Warning</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="user-table-body"></tbody>
+  </table>
+
+  <script>
+    async function fetchUsers() {
+      const res = await fetch('http://localhost:3000/api/users');
+      const users = await res.json();
+
+      const tbody = document.getElementById('user-table-body');
+      tbody.innerHTML = '';
+
+      Object.entries(users).forEach(([steamId, data]) => {
+        const row = document.createElement('tr');
+        if (data.banned) row.classList.add('banned');
+
+        row.innerHTML = `
+          <td>${steamId}</td>
+          <td>
+            <input type="number" id="balance-${steamId}" value="${data.balance || 0}" />
+          </td>
+          <td>
+            <input type="text" id="warning-${steamId}" value="${data.warning || ''}" />
+          </td>
+          <td>
+            <button onclick="updateUser('${steamId}')">Save</button>
+            <button onclick="toggleBan('${steamId}')">${data.banned ? 'Unban' : 'Ban'}</button> <button onclick="removeUser('${steamId}')">Remove</button>
+          </td>
+        `;
+
+        tbody.appendChild(row);
+      });
+    }
+
+    async function updateUser(steamId) {
+      const newBalance = parseFloat(document.getElementById(`balance-${steamId}`).value);
+      const warning = document.getElementById(`warning-${steamId}`).value;
+
+      const res = await fetch('http://localhost:3000/api/update-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ steamId, balance: newBalance, warning })
+      });
+
+      if (res.ok) {
+        alert('User updated!');
+        fetchUsers();
+
+    async function addNewUser() {
+      const steamUrl = document.getElementById('new-steam-url').value;
+      const balance = parseFloat(document.getElementById('new-balance').value);
+      const warning = document.getElementById('new-warning').value;
+
+      const res = await fetch('http://localhost:3000/api/add-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ steamUrl, balance, warning })
+      });
+
+      if (res.ok) {
+        alert('User added!');
+        document.getElementById('new-steam-url').value = '';
+        document.getElementById('new-balance').value = '';
+        document.getElementById('new-warning').value = '';
+        fetchUsers();
+      } else {
+        alert('Failed to add user.');
+      }
+    }
+
+
+    async function removeUser(steamId) {
+      if (!confirm('Are you sure you want to remove this user?')) return;
+
+      const res = await fetch('http://localhost:3000/api/remove-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ steamId })
+      });
+
+      if (res.ok) {
+        fetchUsers();
+
+    async function addNewUser() {
+      const steamUrl = document.getElementById('new-steam-url').value;
+      const balance = parseFloat(document.getElementById('new-balance').value);
+      const warning = document.getElementById('new-warning').value;
+
+      const res = await fetch('http://localhost:3000/api/add-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ steamUrl, balance, warning })
+      });
+
+      if (res.ok) {
+        alert('User added!');
+        document.getElementById('new-steam-url').value = '';
+        document.getElementById('new-balance').value = '';
+        document.getElementById('new-warning').value = '';
+        fetchUsers();
+      } else {
+        alert('Failed to add user.');
+      }
+    }
+
+      } else {
+        alert('Failed to remove user.');
+      }
+    }
+
+      } else {
+        alert('Failed to update user.');
+      }
+    }
+
+    async function toggleBan(steamId) {
+      const res = await fetch('http://localhost:3000/api/toggle-ban', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ steamId })
+      });
+
+      if (res.ok) {
+        fetchUsers();
+
+    async function addNewUser() {
+      const steamUrl = document.getElementById('new-steam-url').value;
+      const balance = parseFloat(document.getElementById('new-balance').value);
+      const warning = document.getElementById('new-warning').value;
+
+      const res = await fetch('http://localhost:3000/api/add-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ steamUrl, balance, warning })
+      });
+
+      if (res.ok) {
+        alert('User added!');
+        document.getElementById('new-steam-url').value = '';
+        document.getElementById('new-balance').value = '';
+        document.getElementById('new-warning').value = '';
+        fetchUsers();
+      } else {
+        alert('Failed to add user.');
+      }
+    }
+
+
+    async function removeUser(steamId) {
+      if (!confirm('Are you sure you want to remove this user?')) return;
+
+      const res = await fetch('http://localhost:3000/api/remove-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ steamId })
+      });
+
+      if (res.ok) {
+        fetchUsers();
+
+    async function addNewUser() {
+      const steamUrl = document.getElementById('new-steam-url').value;
+      const balance = parseFloat(document.getElementById('new-balance').value);
+      const warning = document.getElementById('new-warning').value;
+
+      const res = await fetch('http://localhost:3000/api/add-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ steamUrl, balance, warning })
+      });
+
+      if (res.ok) {
+        alert('User added!');
+        document.getElementById('new-steam-url').value = '';
+        document.getElementById('new-balance').value = '';
+        document.getElementById('new-warning').value = '';
+        fetchUsers();
+      } else {
+        alert('Failed to add user.');
+      }
+    }
+
+      } else {
+        alert('Failed to remove user.');
+      }
+    }
+
+      } else {
+        alert('Failed to ban/unban user.');
+      }
+    }
+
+    fetchUsers();
+
+    async function addNewUser() {
+      const steamUrl = document.getElementById('new-steam-url').value;
+      const balance = parseFloat(document.getElementById('new-balance').value);
+      const warning = document.getElementById('new-warning').value;
+
+      const res = await fetch('http://localhost:3000/api/add-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ steamUrl, balance, warning })
+      });
+
+      if (res.ok) {
+        alert('User added!');
+        document.getElementById('new-steam-url').value = '';
+        document.getElementById('new-balance').value = '';
+        document.getElementById('new-warning').value = '';
+        fetchUsers();
+      } else {
+        alert('Failed to add user.');
+      }
+    }
+
+
+    async function removeUser(steamId) {
+      if (!confirm('Are you sure you want to remove this user?')) return;
+
+      const res = await fetch('http://localhost:3000/api/remove-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ steamId })
+      });
+
+      if (res.ok) {
+        fetchUsers();
+
+    async function addNewUser() {
+      const steamUrl = document.getElementById('new-steam-url').value;
+      const balance = parseFloat(document.getElementById('new-balance').value);
+      const warning = document.getElementById('new-warning').value;
+
+      const res = await fetch('http://localhost:3000/api/add-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ steamUrl, balance, warning })
+      });
+
+      if (res.ok) {
+        alert('User added!');
+        document.getElementById('new-steam-url').value = '';
+        document.getElementById('new-balance').value = '';
+        document.getElementById('new-warning').value = '';
+        fetchUsers();
+      } else {
+        alert('Failed to add user.');
+      }
+    }
+
+      } else {
+        alert('Failed to remove user.');
+      }
+    }
+
+  </script>
+</body>
+</html>
